@@ -1,8 +1,9 @@
+use anyhow::Result;
 use core::str;
-use std::fmt::{Display, Write};
+use std::fmt::Write;
 
 use crate::{color::Color, coordinates::Coordinates};
-use anyhow::Result;
+
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::TcpStream,
@@ -45,12 +46,12 @@ impl Write for LineBuf {
 /// Writing primitive for the canvas.
 ///
 /// Used by the painter to draw images
-pub struct Writer {
+pub struct Connection {
     stream: TcpStream,
     line_buf: LineBuf,
 }
 
-impl Writer {
+impl Connection {
     pub async fn new(addr: &str) -> Result<Self> {
         Ok(Self {
             stream: TcpStream::connect(addr).await?,
@@ -86,5 +87,31 @@ impl Writer {
 
         stream.write_all(line_buf.get_contents()).await?;
         Ok(())
+    }
+}
+
+/// Manages a pool of connections. When the pool is empty, a new connection is created
+pub struct Pool<'a> {
+    addr: &'a str,
+    connections: Vec<Connection>,
+}
+
+impl<'a> Pool<'a> {
+    fn new(addr: &'a str) -> Pool<'a> {
+        Self {
+            addr,
+            connections: Vec::new(),
+        }
+    }
+
+    async fn get(&mut self) -> Result<Connection> {
+        if self.connections.len() == 0 {
+            return Connection::new(self.addr).await;
+        }
+        Ok(self.connections.pop().unwrap())
+    }
+
+    fn put(&mut self, writer: Connection) {
+        self.connections.push(writer);
     }
 }
