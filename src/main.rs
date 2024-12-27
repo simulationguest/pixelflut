@@ -1,39 +1,34 @@
 mod args;
 mod color;
+mod connection;
 mod coordinates;
+mod paintable;
 mod painter;
-mod writer;
 
 use std::u8;
 
 use args::Args;
 use clap::Parser;
 use color::Color;
-use coordinates::Coordinates;
-use writer::Writer;
+use paintable::SolidColor;
+use painter::paint_blocks;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
-    let mut writer = Writer::new(&args.host).await?;
-    println!("{}", writer.get_size().await?);
+    let mut pool = connection::Pool::new(args.addr);
 
-    for x in 0..300 {
-        for y in 0..300 {
-            writer
-                .write_pixel(
-                    Coordinates { x, y },
-                    Color {
-                        r: 0,
-                        g: 0,
-                        b: 0,
-                        a: u8::MAX,
-                    },
-                )
-                .await?;
-        }
+    let size = pool.get_size().await?;
+
+    let paintable = SolidColor(Color {
+        r: u8::MAX,
+        g: 0,
+        b: 0,
+        a: u8::MAX,
+    });
+
+    loop {
+        paint_blocks(size, 3, 3, &mut pool, paintable, 0).await?;
     }
-
-    Ok(())
 }
