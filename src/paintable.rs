@@ -1,14 +1,16 @@
 use crate::{color::Color, coordinates::Coordinates};
 
-pub trait Paintable: Clone + Copy {
+pub type Frame = u32;
+
+pub trait Paintable: Clone + Copy + Send + 'static {
     fn dimensions() -> Option<Coordinates> {
         None
     }
-    fn get_pixel(&self, coordinates: Coordinates, frame: u32) -> Color;
+    fn get_pixel(&self, coordinates: Coordinates, frame: Frame) -> Color;
 }
 
 #[derive(Copy, Clone)]
-pub struct SolidColor(Color);
+pub struct SolidColor(pub Color);
 
 impl Paintable for SolidColor {
     fn get_pixel(&self, _: Coordinates, _: u32) -> Color {
