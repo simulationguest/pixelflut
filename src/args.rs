@@ -4,10 +4,10 @@ use clap::Parser;
 
 #[derive(Parser, Debug)]
 pub struct Args {
-    host: String,
-    #[arg(long)]
+    pub host: String,
+    #[arg(long, default_value_t = 0)]
     x: u32,
-    #[arg(long)]
+    #[arg(long, default_value_t = 0)]
     y: u32,
     #[arg(long)]
     width: Option<NonZeroU32>,
