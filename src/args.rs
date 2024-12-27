@@ -4,7 +4,7 @@ use clap::Parser;
 
 #[derive(Parser, Debug)]
 pub struct Args {
-    pub host: String,
+    pub addr: String,
     #[arg(long, default_value_t = 0)]
     x: u32,
     #[arg(long, default_value_t = 0)]
