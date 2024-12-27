@@ -78,12 +78,12 @@ impl Connection {
         })
     }
 
-    pub async fn write_pixel(&mut self, at: Coordinates, color: Color) -> Result<()> {
+    pub async fn write_pixel(&mut self, coordinates: Coordinates, color: Color) -> Result<()> {
         let stream = &mut self.stream;
         let line_buf = &mut self.line_buf;
 
         line_buf.clear();
-        write!(line_buf, "PX {at} {color}\n")?;
+        write!(line_buf, "PX {coordinates} {color}\n")?;
 
         stream.write_all(line_buf.get_contents()).await?;
         Ok(())
@@ -91,27 +91,35 @@ impl Connection {
 }
 
 /// Manages a pool of connections. When the pool is empty, a new connection is created
-pub struct Pool<'a> {
-    addr: &'a str,
+pub struct Pool {
+    addr: String,
     connections: Vec<Connection>,
 }
 
-impl<'a> Pool<'a> {
-    fn new(addr: &'a str) -> Pool<'a> {
+impl Pool {
+    pub fn new(addr: String) -> Pool {
         Self {
             addr,
             connections: Vec::new(),
         }
     }
 
-    async fn get(&mut self) -> Result<Connection> {
+    pub async fn get_size(&mut self) -> Result<Coordinates> {
+        let mut conn = self.get().await?;
+        let size = conn.get_size().await?;
+        self.put(conn);
+        Ok(size)
+    }
+
+    pub async fn get(&mut self) -> Result<Connection> {
         if self.connections.len() == 0 {
-            return Connection::new(self.addr).await;
+            println!("New connection");
+            return Connection::new(&self.addr).await;
         }
         Ok(self.connections.pop().unwrap())
     }
 
-    fn put(&mut self, writer: Connection) {
+    pub fn put(&mut self, writer: Connection) {
         self.connections.push(writer);
     }
 }
