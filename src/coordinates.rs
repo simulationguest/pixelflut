@@ -2,8 +2,8 @@ use std::fmt::Display;
 
 #[derive(Copy, Clone)]
 pub struct Coordinates {
-    pub x: u16,
-    pub y: u16,
+    pub x: u32,
+    pub y: u32,
 }
 
 impl Display for Coordinates {

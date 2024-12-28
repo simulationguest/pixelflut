@@ -1,34 +1,43 @@
 mod args;
+mod art;
 mod color;
 mod connection;
 mod coordinates;
-mod paintable;
 mod painter;
 
-use std::u8;
+use std::time::Duration;
 
 use args::Args;
+use art::{EyeSore, Image, SolidColor};
 use clap::Parser;
-use color::Color;
-use paintable::SolidColor;
-use painter::paint_blocks;
+use painter::{paint_blocks, LCG};
+use tokio::time::sleep;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    video_rs::init().unwrap();
+
     let args = Args::parse();
 
     let mut pool = connection::Pool::new(args.addr);
 
     let size = pool.get_size().await?;
 
-    let paintable = SolidColor(Color {
-        r: u8::MAX,
+    let art = Image::new("./cat.jpg", size)?;
+    let art = SolidColor(color::Color {
+        r: 255,
         g: 0,
         b: 0,
-        a: u8::MAX,
+        a: 255,
     });
+    let art = EyeSore;
 
-    loop {
-        paint_blocks(size, 3, 3, &mut pool, paintable, 0).await?;
+    let mut painter = LCG::new(size);
+    let mut conn = pool.get().await?;
+
+    for frame in 0..u32::MAX {
+        painter.paint(size, &mut conn, art.clone(), frame).await?;
     }
+
+    Ok(())
 }

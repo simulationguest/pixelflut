@@ -1,6 +1,6 @@
 use anyhow::Result;
 use core::str;
-use std::fmt::Write;
+use std::{fmt::Write, thread::JoinHandle};
 
 use crate::{color::Color, coordinates::Coordinates};
 
@@ -59,7 +59,7 @@ impl Connection {
         })
     }
 
-    pub async fn get_size(&mut self) -> Result<Coordinates> {
+    pub async fn get_canvas_size(&mut self) -> Result<Coordinates> {
         let mut stream = BufReader::new(&mut self.stream);
 
         stream.write_all(b"SIZE\n").await?;
@@ -106,14 +106,14 @@ impl Pool {
 
     pub async fn get_size(&mut self) -> Result<Coordinates> {
         let mut conn = self.get().await?;
-        let size = conn.get_size().await?;
+        let size = conn.get_canvas_size().await?;
         self.put(conn);
         Ok(size)
     }
 
     pub async fn get(&mut self) -> Result<Connection> {
         if self.connections.len() == 0 {
-            println!("New connection");
+            println!("new conn");
             return Connection::new(&self.addr).await;
         }
         Ok(self.connections.pop().unwrap())
