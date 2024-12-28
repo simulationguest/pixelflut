@@ -1,9 +1,5 @@
-use anyhow::Result;
 use image::{DynamicImage, GenericImageView, ImageReader};
-use std::{
-    path::PathBuf,
-    sync::{Arc, RwLock},
-};
+use std::sync::{Arc, RwLock};
 
 use crate::{color::Color, coordinates::Coordinates};
 
@@ -52,7 +48,7 @@ impl Art for EyeSore {
 pub struct Image(Arc<RwLock<DynamicImage>>);
 
 impl Image {
-    pub fn new(path: &str, size: Coordinates) -> Result<Self> {
+    pub fn new(path: &str, size: Coordinates) -> Result<Self, image::ImageError> {
         let img = ImageReader::open(path)?.decode()?.resize(
             size.x,
             size.y,
@@ -61,6 +57,7 @@ impl Image {
 
         Ok(Self(Arc::new(RwLock::new(img))))
     }
+
     pub fn size(&self) -> Coordinates {
         let handle = self.0.read().unwrap();
         Coordinates {

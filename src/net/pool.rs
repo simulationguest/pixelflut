@@ -6,14 +6,14 @@ use tokio::sync::Semaphore;
 pub struct Pool(Arc<PoolInner>);
 
 struct PoolInner {
-    addr: String,
+    addr: Arc<str>,
     semaphore: Semaphore,
 }
 
 impl Pool {
     pub fn new(addr: String, max_connections: usize) -> Pool {
         let inner = PoolInner {
-            addr,
+            addr: addr.into(),
             semaphore: Semaphore::new(max_connections),
         };
         Self(Arc::new(inner))
