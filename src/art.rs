@@ -4,7 +4,6 @@ use std::{
     path::PathBuf,
     sync::{Arc, RwLock},
 };
-use video_rs::{Decoder, Location};
 
 use crate::{color::Color, coordinates::Coordinates};
 
@@ -88,17 +87,5 @@ impl Art for Image {
             b: c[2],
             a: c[3],
         }
-    }
-}
-
-#[derive(Clone)]
-struct Video();
-
-impl Video {
-    fn new() -> Result<Self> {
-        let source = Location::File(PathBuf::from("./video.mp4"));
-        let mut decoder = Decoder::new(source)?;
-        let frame = decoder.decode_raw()?;
-        todo!()
     }
 }
