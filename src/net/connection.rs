@@ -1,5 +1,5 @@
-use super::Buffer;
-use anyhow::Result;
+use super::{Buffer, Error};
+
 use core::str;
 use std::fmt::Write;
 
@@ -21,20 +21,20 @@ pub struct Connection {
 }
 
 impl Connection {
-    async fn flush(&mut self) -> Result<()> {
+    async fn flush(&mut self) -> Result<(), Error> {
         self.stream.write_all(self.buffer.get_contents()).await?;
         self.buffer.clear();
         Ok(())
     }
 
-    pub async fn new(addr: &str) -> Result<Self> {
+    pub async fn new(addr: &str) -> Result<Self, Error> {
         Ok(Self {
             stream: TcpStream::connect(addr).await?,
             buffer: Buffer::new(),
         })
     }
 
-    pub async fn get_canvas_size(&mut self) -> Result<Coordinates> {
+    pub async fn get_canvas_size(&mut self) -> Result<Coordinates, Error> {
         let mut stream = BufReader::new(&mut self.stream);
 
         stream.write_all(b"SIZE\n").await?;
@@ -53,12 +53,16 @@ impl Connection {
         })
     }
 
-    pub async fn set_offset(&mut self, offset: Coordinates) -> Result<()> {
+    pub async fn set_offset(&mut self, offset: Coordinates) -> Result<(), Error> {
         write!(self.buffer, "{offset}")?;
         self.flush().await
     }
 
-    pub async fn write_pixel(&mut self, coordinates: Coordinates, color: Color) -> Result<()> {
+    pub async fn write_pixel(
+        &mut self,
+        coordinates: Coordinates,
+        color: Color,
+    ) -> Result<(), Error> {
         write!(self.buffer, "PX {coordinates} {color}\n")?;
         self.flush().await
     }
