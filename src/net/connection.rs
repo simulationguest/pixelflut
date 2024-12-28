@@ -1,9 +1,8 @@
 use super::{Buffer, Error};
 
-use core::str;
-use std::fmt::Write;
-
 use crate::{color::Color, coordinates::Coordinates};
+
+use std::{fmt::Write, str};
 
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
