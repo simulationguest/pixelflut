@@ -9,3 +9,6 @@ pub use color::Color;
 pub use coordinates::Coordinates;
 pub use net::{Connection, Pool};
 pub use paint::paint;
+
+#[cfg(feature = "image")]
+pub use art::Image;
