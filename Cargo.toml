@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 async-channel = "2.3.1"
-clap = { version = "4.5.23", features = ["derive"] }
 image = "0.25.5"
 thiserror = "2.0.9"
 tokio = { version = "1.42.0", features = ["full"] }
