@@ -5,13 +5,11 @@ pub trait Art: Sync + Clone {
     fn next_frame(&mut self) {}
 }
 
-mod rainbow;
 mod solid_color;
 
 #[cfg(feature = "image")]
 mod image;
 
-pub use rainbow::*;
 pub use solid_color::*;
 
 #[cfg(feature = "image")]
