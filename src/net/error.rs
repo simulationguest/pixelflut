@@ -11,6 +11,6 @@ pub enum Error {
     #[error("format error: {0}")]
     FormatError(#[from] std::fmt::Error),
 
-    #[error("semaphore error: {0}")]
-    SemaphoreError(#[from] tokio::sync::TryAcquireError),
+    #[error("recv error: {0}")]
+    RecvError(#[from] async_channel::TryRecvError),
 }
