@@ -53,7 +53,7 @@ impl Connection {
     }
 
     pub async fn set_offset(&mut self, offset: Coordinates) -> Result<(), Error> {
-        write!(self.buffer, "{offset}")?;
+        writeln!(self.buffer, "OFFSET {offset}")?;
         self.flush().await
     }
 
@@ -62,7 +62,7 @@ impl Connection {
         coordinates: Coordinates,
         color: Color,
     ) -> Result<(), Error> {
-        write!(self.buffer, "PX {coordinates} {color}\n")?;
+        writeln!(self.buffer, "PX {coordinates} {color}")?;
         self.flush().await
     }
 }
