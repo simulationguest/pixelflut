@@ -34,4 +34,13 @@ impl Art for Image {
         let c = handle.get_pixel(coordinates.x, coordinates.y);
         Color::rgba(c[0], c[1], c[2], c[3])
     }
+
+    fn size(&self) -> Coordinates {
+        let handle = self.handle();
+
+        Coordinates {
+            x: handle.width(),
+            y: handle.height(),
+        }
+    }
 }
