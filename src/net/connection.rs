@@ -41,7 +41,7 @@ impl Connection {
         let mut line = String::new();
         stream.read_line(&mut line).await?;
 
-        let mut parts = line.trim().split(" ").skip(1);
+        let mut parts = line.trim().split(' ').skip(1);
 
         let width = parts.next().unwrap().parse()?;
         let height = parts.next().unwrap().parse()?;
