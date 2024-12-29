@@ -1,5 +1,7 @@
 use thiserror::Error;
 
+use crate::color;
+
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("io error: {0}")]
@@ -13,4 +15,7 @@ pub enum Error {
 
     #[error("recv error: {0}")]
     RecvError(#[from] async_channel::TryRecvError),
+
+    #[error("parse color error: {0}")]
+    ParseColorError(#[from] color::Error),
 }

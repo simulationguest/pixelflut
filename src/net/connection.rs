@@ -33,13 +33,17 @@ impl Connection {
         })
     }
 
-    pub async fn get_canvas_size(&mut self) -> Result<Coordinates, Error> {
+    async fn read_line(&mut self) -> Result<String, Error> {
         let mut stream = BufReader::new(&mut self.stream);
-
-        stream.write_all(b"SIZE\n").await?;
-
         let mut line = String::new();
         stream.read_line(&mut line).await?;
+        Ok(line)
+    }
+
+    pub async fn get_canvas_size(&mut self) -> Result<Coordinates, Error> {
+        self.stream.write_all(b"SIZE\n").await?;
+
+        let line = self.read_line().await?;
 
         let mut parts = line.trim().split(' ').skip(1);
 
@@ -64,5 +68,13 @@ impl Connection {
     ) -> Result<(), Error> {
         writeln!(self.buffer, "PX {coordinates} {color}")?;
         self.flush().await
+    }
+
+    pub async fn get_pixel(&mut self, at: Coordinates) -> Result<Color, Error> {
+        writeln!(self.buffer, "PX {at}")?;
+        self.flush().await?;
+
+        let line = self.read_line().await?;
+        Ok(line.parse()?)
     }
 }

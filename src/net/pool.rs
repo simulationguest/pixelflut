@@ -11,7 +11,8 @@ use async_channel::{Receiver, Sender, TryRecvError};
 pub struct Pool(Arc<PoolInner>);
 
 impl Pool {
-    #[must_use] pub fn new(addr: String) -> Self {
+    #[must_use]
+    pub fn new(addr: String) -> Self {
         let (sender, receiver) = async_channel::unbounded();
         let inner = PoolInner {
             addr: addr.into(),
@@ -79,7 +80,10 @@ impl PoolInner {
     async fn acquire(self: &Arc<Self>) -> Result<Handle, Error> {
         let conn = match self.receiver.try_recv() {
             Ok(conn) => Ok(conn),
-            Err(TryRecvError::Empty) => Connection::new(&self.addr).await,
+            Err(TryRecvError::Empty) => {
+                println!("conn");
+                Connection::new(&self.addr).await
+            }
             Err(err) => return Err(err.into()),
         }?;
 
