@@ -18,4 +18,7 @@ pub enum Error {
 
     #[error("parse color error: {0}")]
     ParseColorError(#[from] color::Error),
+
+    #[error("parse canvas size error")]
+    ParseCanvasSizeError,
 }

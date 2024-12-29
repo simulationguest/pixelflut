@@ -47,8 +47,8 @@ impl Connection {
 
         let mut parts = line.trim().split(' ').skip(1);
 
-        let width = parts.next().unwrap().parse()?;
-        let height = parts.next().unwrap().parse()?;
+        let width = parts.next().ok_or(Error::ParseCanvasSizeError)?.parse()?;
+        let height = parts.next().ok_or(Error::ParseCanvasSizeError)?.parse()?;
 
         Ok(Coordinates {
             x: width,
