@@ -1,4 +1,4 @@
-use std::{fmt::Display, u8};
+use std::fmt::Display;
 
 #[derive(Clone, Copy)]
 pub struct Color {
