@@ -1,4 +1,13 @@
-use std::fmt::Display;
+use std::{fmt::Display, u8};
+
+pub fn rgb(r: u8, g: u8, b: u8) -> Color {
+    Color {
+        r,
+        g,
+        b,
+        a: u8::MAX,
+    }
+}
 
 #[derive(Clone, Copy)]
 pub struct Color {

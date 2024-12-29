@@ -1,6 +1,6 @@
 use super::{Buffer, Error};
 
-use crate::{color::Color, coordinates::Coordinates};
+use crate::{Color, Coordinates};
 
 use std::{fmt::Write, str};
 
