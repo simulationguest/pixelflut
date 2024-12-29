@@ -1,9 +1,13 @@
-use image::{DynamicImage, GenericImageView, ImageReader};
+use crate::{Color, Coordinates};
+
+use super::Art;
 
 use std::{
     path::Path,
-    sync::{Arc, RwLock},
+    sync::{Arc, RwLock, RwLockReadGuard},
 };
+
+use image::{DynamicImage, GenericImageView, ImageReader};
 
 #[derive(Clone)]
 pub struct Image(Arc<RwLock<DynamicImage>>);
@@ -18,26 +22,16 @@ impl Image {
 
         Ok(Self(Arc::new(RwLock::new(img))))
     }
+
+    fn handle(&self) -> RwLockReadGuard<'_, DynamicImage> {
+        self.0.read().unwrap()
+    }
 }
 
 impl Art for Image {
-    fn dimensions(&self) -> Option<Coordinates> {
-        let handle = self.0.read().unwrap();
-
-        Some(Coordinates {
-            x: handle.width(),
-            y: handle.height(),
-        })
-    }
-
     fn get_pixel(&self, coordinates: Coordinates) -> Color {
-        let handle = self.0.read().unwrap();
+        let handle = self.handle();
         let c = handle.get_pixel(coordinates.x, coordinates.y);
-        Color {
-            r: c[0],
-            g: c[1],
-            b: c[2],
-            a: c[3],
-        }
+        Color::rgba(c[0], c[1], c[2], c[3])
     }
 }
